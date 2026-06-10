@@ -30,7 +30,7 @@ When the plant is **found**, return:
 
 When the plant is **not found**, return:
 ```python
-{"found": False, "name": <normalized input>, "message": <helpful string>}
+{"found": False, "name": <original input>, "message": <helpful string>}
 ```
 
 ---
@@ -70,7 +70,7 @@ likely match for clean user input. Aliases are the broadest net, so they go last
 *Aliases are stored as a list of strings. How will you check if the normalized input matches any alias in the list? Write your approach in pseudocode or plain English.*
 
 ```
-[your answer here]
+To do reliable case-insensitive matching across slug, display_name, and aliases, use one shared normalization function and apply it to both user input and all plant name fields.
 ```
 
 ---
@@ -80,7 +80,7 @@ likely match for clean user input. Aliases are the broadest net, so they go last
 *When a plant isn't found, the agent will read your message and use it to decide what to tell the user. Write the exact string you'll return — make it useful to the agent, not just to a human reading logs.*
 
 ```
-[your answer here]
+No plant matched the user's input. Tell the user you couldn't find that plant in the database and suggest trying a common name, scientific name, or known alias.
 ```
 
 ---
