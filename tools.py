@@ -20,46 +20,43 @@ _MONTH_TO_SEASON = {
 }
 
 
-def lookup_plant(plant_name: str) -> dict:
-    """
-    Search the plant database for a plant by name and return its care information.
+def _normalize_name(name: str) -> str:
+    return name.strip().lower()
 
-    TODO — Milestone 1:
 
-    Right now this always returns a "not found" response. Your job is to implement
-    the search logic so it can actually find plants.
+def lookup_plant(plant_name: str) -> dict[str, object]:
+    normalized_name = _normalize_name(plant_name)
 
-    The plant database (_plant_db) is a dict where keys are lowercase slugs like
-    "pothos", "snake_plant", "fiddle_leaf_fig". Each plant also has a "display_name"
-    field and an "aliases" list with common alternate names.
+    # Fast path: direct slug lookup.
+    if normalized_name in _plant_db:
+        return {
+            "found": True,
+            "plant": _plant_db[normalized_name],
+        }
 
-    Your implementation should handle all three:
-      1. Direct key match (e.g., "pothos" → finds "pothos")
-      2. Display name match (e.g., "Pothos" → finds "pothos")
-      3. Alias match (e.g., "devil's ivy" → finds "pothos")
+    # Fall back to matching display names and aliases case-insensitively.
+    for plant in _plant_db.values():
+        if _normalize_name(plant["display_name"]) == normalized_name:
+            return {
+                "found": True,
+                "plant": plant,
+            }
 
-    All matching should be case-insensitive. Strip whitespace from the input.
+        for alias in plant.get("aliases", []):
+            if _normalize_name(alias) == normalized_name:
+                return {
+                    "found": True,
+                    "plant": plant,
+                }
 
-    Return format when found:
-      {"found": True, "plant": <the full plant dict>}
-
-    Return format when not found:
-      {"found": False, "name": <original input>, "message": <helpful string>}
-
-    The message in the not-found case matters — the agent will use it to decide
-    what to tell the user. Your spec has a dedicated field for this — think about
-    what information would actually be helpful to the agent.
-
-    Before writing code, complete the lookup_plant section of specs/tool-functions-spec.md.
-    """
     return {
         "found": False,
         "name": plant_name,
-        "message": "Plant lookup not yet implemented. Complete Milestone 1.",
+        "message": "No plant matched the user's input. Tell the user you couldn't find that plant in the database and suggest trying a common name, scientific name, or known alias.",
     }
 
 
-def get_seasonal_conditions(season: str | None = None) -> dict:
+def get_seasonal_conditions(season: str | None = None) -> dict[str, object]:
     """
     Return current seasonal care context for houseplants.
 
